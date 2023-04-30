@@ -4,30 +4,10 @@ return {
     "nvim-tree/nvim-web-devicons",
     lazy = true,
   },
-  -- {
-  --   "themercorp/themer.lua",
-  --   -- lazy = false,
-  --   config = function()
-  --     require("themer").setup {
-  --       colorscheme = "kanagawa", -- default colorscheme
-  --       transparent = false,
-  --       term_colors = true,
-  --       dim_inactive = true,
-  --       styles = {
-  --         ["function"] = { style = "italic" },
-  --         functionbuiltin = { style = "italic" },
-  --         variable = { style = "italic" },
-  --         variableBuiltIn = { style = "italic" },
-  --         parameter = { style = "italic" },
-  --       },
-  --     }
-  --   end,
-  -- },
   {
     "catppuccin/nvim",
     name = "catppuccin",
     opts = {},
-    -- lazy = false
   },
   {
     "rebelot/kanagawa.nvim",
@@ -73,16 +53,6 @@ return {
       }
     end,
   },
-  -- {
-  --   "catppuccin/nvim",
-  --   lazy = false,
-  --   name = "catppuccin",
-  --   -- opts = function(plugin)
-  --   --     -- vim.g.colors_name = "catppuccin"
-  --   --
-  --   --     return require "plugins.configs.catppuccin"
-  --   -- end,
-  -- },
   {
     "lukas-reineke/indent-blankline.nvim",
     enabled = false,
@@ -122,21 +92,6 @@ return {
       require("bqf").setup(opts)
     end,
   },
-  -- {
-  --   "nvim-lualine/lualine.nvim",
-  --   -- lazy = false,
-  --   opts = function()
-  --     return require "plugins.configs.lualine"
-  --   end,
-  --   requires = { "nvim-tree/nvim-web-devicons", opt = true },
-  -- },
-  -- {
-  --   "rebelot/heirline.nvim",
-  --   lazy = false,
-  --   config = function()
-  --     require "plugins.configs.heirline"
-  --   end,
-  -- },
   {
     "stevearc/dressing.nvim",
     lazy = true,

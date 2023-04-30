@@ -12,39 +12,60 @@ end
 vim.opt.runtimepath:prepend(lazypath)
 if os.getenv("NVIM") ~= nil then
 	require("lazy").setup({
-		{ "willothy/flatten.nvim", config = true, lazy = false, },
+		{ "willothy/flatten.nvim", config = true, lazy = false },
 	})
 	return
 end
-require("lazy").setup({
-  spec = {
-    -- add LazyVim and import its plugins
-     -- { "LazyVim/LazyVim", import = "lazyvim.plugins" },
-    -- import any extras modules here
-    -- { import = "lazyvim.plugins.extras.lang.typescript" },
-    -- { import = "lazyvim.plugins.extras.lang.json" },
-    -- { import = "lazyvim.plugins.extras.ui.mini-animate" },
-    -- import/override with your plugins
-    { import = "lazyplugins" },
-  },
-	defaults = { lazy = true, version = false },
-	-- install = { colorscheme = { "tokyonight", "habamax" } },
-	checker = { enabled = false },
+local config = {
+	defaults = { lazy = true },
+	install = { colorscheme = { "nvchad" } },
+
+	ui = {
+		icons = {
+			ft = "",
+			lazy = "鈴 ",
+			loaded = "",
+			not_loaded = "",
+		},
+	},
+
 	performance = {
 		rtp = {
 			disabled_plugins = {
-			"gzip",
-			"man",
-			"spellfile",
-			-- "matchit",
-			-- "matchparen",
-			-- "netrwPlugin",
-			"shada",
-			"tarPlugin",
-			"tohtml",
-			"tutor",
-			"zipPlugin",
+				"2html_plugin",
+				"tohtml",
+				"getscript",
+				"getscriptPlugin",
+				"gzip",
+				"logipat",
+				"netrw",
+				"netrwPlugin",
+				"netrwSettings",
+				"netrwFileHandlers",
+				"matchit",
+				"tar",
+				"tarPlugin",
+				"rrhelper",
+				"spellfile_plugin",
+				"vimball",
+				"vimballPlugin",
+				"zip",
+				"zipPlugin",
+				"tutor",
+				"rplugin",
+				"syntax",
+				"synmenu",
+				"optwin",
+				"compiler",
+				"bugreport",
+				"ftplugin",
 			},
 		},
 	},
+}
+require("lazy").setup({
+	spec = {
+		{ import = "lazyplugins" },
+	},
+  config
 })
