@@ -19,9 +19,23 @@ for _, sign in ipairs(signs) do
 end
 vim.diagnostic.config {
   virtual_text = {
-    prefix = "",
+		prefix = "",
+
+		format = function(diagnoscic)
+			local sig = ""
+			if diagnoscic.severity == vim.diagnostic.severity.ERROR then
+				sig = signs[1].text
+			elseif diagnoscic.severity == vim.diagnostic.severity.WARN then
+				sig = signs[2].text
+			elseif diagnoscic.severity == vim.diagnostic.severity.HINT then
+				sig = signs[3].text
+			elseif diagnoscic.severity == vim.diagnostic.severity.INFO then
+				sig = signs[4].text
+			end
+			return diagnoscic.severity and sig or " "
+		end,
   },
-  signs = true,
+  signs = false,
   underline = true,
   update_in_insert = false,
 }
@@ -45,182 +59,40 @@ win.default_opts = function(options)
 end
 -- export on_attach & capabilities for custom lspconfigs
 
-local is_available = utils.is_available
+
 M.on_attach = function(client, bufnr)
-  client.server_capabilities.semanticTokensProvider = false
+    client.server_capabilities.semanticTokensProvider = false
+    local fmt = function(cmd) return function(str) return cmd:format(str) end end
+    local lsp_action = fmt('<cmd>lua vim.lsp.%s<cr>')
+    local diagnostic = fmt('<cmd>lua vim.diagnostic.%s<cr>')
 
-  client.server_capabilities.documentFormattingProvider = false
-  client.server_capabilities.documentRangeFormattingProvider = false
-  local capabilities = client.server_capabilities
-  local lsp_mappings = {
-    n = {
-      ["<leader>ld"] = {
-        function()
-          vim.diagnostic.open_float()
-        end,
-        desc = "Hover diagnostics",
-      },
-      ["[d"] = {
-        function()
-          vim.diagnostic.goto_prev()
-        end,
-        desc = "Previous diagnostic",
-      },
-      ["]d"] = {
-        function()
-          vim.diagnostic.goto_next()
-        end,
-        desc = "Next diagnostic",
-      },
-      ["gl"] = {
-        function()
-          vim.diagnostic.open_float()
-        end,
-        desc = "Hover diagnostics",
-      },
-    },
-    v = {},
-  }
-
-  lsp_mappings.n["<leader>fm"] = {
-    function()
-      vim.lsp.buf.format { async = true }
-    end,
-    "lsp formatting",
-  }
-
-  if capabilities.declarationProvider then
-    lsp_mappings.n["gD"] = {
-      function()
-        vim.lsp.buf.declaration()
-      end,
-      desc = "Declaration of current symbol",
-    }
-  end
-
-  lsp_mappings.n["gd"] = {
-    function()
-      vim.lsp.buf.definition()
-    end,
-    desc = "Show the definition of current symbol",
-  }
-  if is_available "mason-lspconfig.nvim" then
-    lsp_mappings.n["<leader>li"] = { "<cmd>LspInfo<cr>", desc = "LSP information" }
-  end
-
-  if is_available "null-ls.nvim" then
-    lsp_mappings.n["<leader>lI"] = { "<cmd>NullLsInfo<cr>", desc = "Null-ls information" }
-  end
-
-  lsp_mappings.n["K"] = {
-    function()
-      vim.lsp.buf.hover()
-    end,
-    desc = "Hover symbol details",
-  }
-
-  lsp_mappings.n["gI"] = {
-    function()
-      vim.lsp.buf.implementation()
-    end,
-    desc = "Implementation of current symbol",
-  }
-
-  lsp_mappings.n["gr"] = {
-    function()
-      vim.lsp.buf.references()
-    end,
-    desc = "References of current symbol",
-  }
-  lsp_mappings.n["<leader>lR"] = {
-    function()
-      vim.lsp.buf.references()
-    end,
-    desc = "Search references",
-  }
-
-  lsp_mappings.n["<leader>lr"] = {
-    function()
-      vim.lsp.buf.rename()
-    end,
-    desc = "Rename current symbol",
-  }
-
-  lsp_mappings.n["<leader>lh"] = {
-    function()
-      vim.lsp.buf.signature_help()
-    end,
-    desc = "Signature help",
-  }
-
-  lsp_mappings.n["gT"] = {
-    function()
-      vim.lsp.buf.type_definition()
-    end,
-    desc = "Definition of current type",
-  }
-
-  lsp_mappings.n["<leader>lG"] = {
-    function()
-      vim.lsp.buf.workspace_symbol()
-    end,
-    desc = "Search workspace symbols",
-  }
-
-  --  if capabilities.semanticTokensProvider and vim.lsp.semantic_tokens then
-  --    lsp_mappings.n["<leader>uY"] = {
-  --      function() require("astronvim.utils.ui").toggle_buffer_semantic_tokens(bufnr) end,
-  --      desc = "Toggle LSP semantic highlight (buffer)",
-  --    }
-  --  end
-
-  if is_available "telescope.nvim" then -- setup telescope mappings
-    if lsp_mappings.n.gd then
-      lsp_mappings.n.gd[1] = function()
-        require("telescope.builtin").lsp_definitions()
-      end
+    local map = function(m, lhs, rhs)
+        local opts = { buffer = bufnr, remap = false }
+        vim.keymap.set(m, lhs, rhs, opts)
     end
-    if lsp_mappings.n.gI then
-      lsp_mappings.n.gI[1] = function()
-        require("telescope.builtin").lsp_implementations()
-      end
-    end
-    if lsp_mappings.n.gr then
-      lsp_mappings.n.gr[1] = function()
-        require("telescope.builtin").lsp_references()
-      end
-    end
-    if lsp_mappings.n["<leader>lR"] then
-      lsp_mappings.n["<leader>lR"][1] = function()
-        require("telescope.builtin").lsp_references()
-      end
-    end
-    if lsp_mappings.n.gT then
-      lsp_mappings.n.gT[1] = function()
-        require("telescope.builtin").lsp_type_definitions()
-      end
-    end
-    if lsp_mappings.n["<leader>lG"] then
-      lsp_mappings.n["<leader>lG"][1] = function()
-        vim.ui.input({ prompt = "Symbol Query: " }, function(query)
-          if query then
-            require("telescope.builtin").lsp_workspace_symbols { query = query }
-          end
-        end)
-      end
-    end
-  end
 
-  for mode, tab in pairs(lsp_mappings) do
-    for key, values in pairs(tab) do
-      local opts = { buffer = bufnr, remap = false }
+    map('n', 'K', lsp_action 'buf.hover()')
+    map('n', 'gd', lsp_action 'buf.definition()')
+    map('n', 'gD', lsp_action 'buf.declaration()')
+    map('n', 'gi', lsp_action 'buf.implementation()')
+    map('n', 'go', lsp_action 'buf.type_definition()')
+    map('n', 'gr', lsp_action 'buf.references()')
+    map('n', 'gs', lsp_action 'buf.signature_help()')
+    map('i', '<c-h>', lsp_action 'buf.signature_help()')
+    map('n', '<F2>', lsp_action 'buf.rename()')
+    map('n', '<F3>', lsp_action 'buf.format({async = true})')
+    map('x', '<F3>', lsp_action 'buf.format({async = true})')
+    map('n', '<F4>', lsp_action 'buf.code_action()')
 
-      if values.desc then
-        opts.desc = values.desc
-      end
-      vim.keymap.set(mode, key, values[1], opts)
+    if vim.lsp.buf.range_code_action then
+        map('x', '<F4>', lsp_action 'buf.range_code_action()')
+    else
+        map('x', '<F4>', lsp_action 'buf.code_action()')
     end
-  end
+
+    map('n', 'gl', diagnostic 'open_float()')
+    map('n', '[d', diagnostic 'goto_prev()')
+    map('n', ']d', diagnostic 'goto_next()')
 end
 
 local ok_lspconfig, lspconfig = pcall(require, "lspconfig")
@@ -258,6 +130,9 @@ M.capabilities.textDocument.completion.completionItem = {
 }
 
 local lspconfig = require "lspconfig"
+local runtime_path = vim.split(package.path, ';')
+  table.insert(runtime_path, 'lua/?.lua')
+  table.insert(runtime_path, 'lua/?/init.lua')
 local servers = {
   "html",
   "cssls",
@@ -265,24 +140,30 @@ local servers = {
   "clangd",
   "tailwindcss",
   lua_ls = {
-    settings = {
+ settings = {
       Lua = {
+        -- Disable telemetry
+        telemetry = {enable = false},
+        runtime = {
+          -- Tell the language server which version of Lua you're using
+          -- (most likely LuaJIT in the case of Neovim)
+          version = 'LuaJIT',
+          path = runtime_path,
+        },
         diagnostics = {
-          globals = { "vim" },
+          -- Get the language server to recognize the `vim` global
+          globals = {'vim'}
         },
         workspace = {
-
+          checkThirdParty = false,
           library = {
-            [vim.fn.expand "$VIMRUNTIME/lua"] = true,
-            [vim.fn.expand "$VIMRUNTIME/lua/vim/lsp"] = true,
-            [vim.fn.stdpath "data" .. "/lazy/extensions/nvchad_types"] = true,
-            [vim.fn.stdpath "data" .. "/lazy/lazy.nvim/lua/lazy"] = true,
-          },
-          maxPreload = 100000,
-          preloadFileSize = 10000,
-        },
-      },
-    },
+            -- Make the server aware of Neovim runtime files
+            vim.fn.expand('$VIMRUNTIME/lua'),
+            vim.fn.stdpath('config') .. '/lua'
+          }
+        }
+      }
+    }
   },
   ltex = {
     autostart = false,

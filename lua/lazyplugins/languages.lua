@@ -1,4 +1,3 @@
-local keymaps = require "keymaps.languages"
 
 
 return {
@@ -72,9 +71,7 @@ return {
   },
   {
     "renerocksai/telekasten.nvim",
-    keys = keymaps.notes,
     cmd = { "Telekasten" },
-    dependencies = { "nvim-telescope/telescope.nvim" },
     config = function()
       require("telekasten").setup {
         home = vim.fn.expand "~/.config/nvim/notes", -- Put the name of your notes directory here

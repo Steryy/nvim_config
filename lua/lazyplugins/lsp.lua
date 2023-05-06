@@ -1,21 +1,16 @@
-return {
-  { "jose-elias-alvarez/typescript.nvim", lazy = true },
-  {
-    "neovim/nvim-lspconfig",
+return{
 
-    init = function()
-      require("core.utils").lazy_load "nvim-lspconfig"
-    end,
-    cmd = { "LspInfo" },
-    config = function()
-      require "plugins.configs.lspconfig"
-    end,
+  {
+    'neovim/nvim-lspconfig',
+    cmd = 'LspInfo',
+    event = {'BufReadPre', 'BufNewFile'},
     dependencies = {
-      -- format & linting
+      {'hrsh7th/cmp-nvim-lsp'},
+      {'williamboman/mason-lspconfig.nvim'},
       {
-        "jose-elias-alvarez/null-ls.nvim",
-        config = function()
-          require "plugins.configs.null-ls"
+        'williamboman/mason.nvim',
+        build = function()
+          pcall(vim.cmd, 'MasonUpdate')
         end,
       },
 
@@ -24,16 +19,19 @@ return {
         config = true,
       },
     },
+    config = function()
+            require("plugins.configs.lspconfig")
+
+    end
   },
-  { "nvim-lua/lsp-status.nvim", lazy = true },
-  {
-    "williamboman/mason.nvim",
-    cmd = { "Mason", "MasonInstall", "MasonInstallAll", "MasonUninstall", "MasonUninstallAll", "MasonLog" },
-    event = "VeryLazy",
-    opts = function()
-      return require "plugins.configs.mason"
-    end,
-    config = true,
-  },
-  -- override plugin configs
+
+	{
+		"jose-elias-alvarez/null-ls.nvim",
+        event ="VeryLazy",
+        config = function ()
+            require("plugins.configs.null-ls")
+        end,
+        lazy = true
+	},
+
 }

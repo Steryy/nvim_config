@@ -1,8 +1,4 @@
--------------------------------------- globals -----------------------------------------
-require "core.autocmds"
 require("core.options")
-require("core.keymaps")
 require("core.lazy")
-require("core.colors")
-
-
+require("core.autocmds")
+require("core.keymaps")

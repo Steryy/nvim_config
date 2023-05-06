@@ -1,12 +1,11 @@
 local function map(mode, lhs, rhs, opts)
-	local keys = require("lazy.core.handler").handlers.keys
-	---@cast keys LazyKeysHandler
-	-- do not create the keymap if a lazy keys handler exists
-	if not keys.active[keys.parse({ lhs, mode = mode }).id] then
-		opts = opts or {}
-		opts.silent = opts.silent ~= false
-		vim.keymap.set(mode, lhs, rhs, opts)
-	end
+    opts = opts or {}
+    opts.silent = opts.silent ~= false
+    opts.buffer = 0
+    if not rhs then
+        return
+    end
+    vim.keymap.set(mode, lhs, rhs, opts)
 end
 
 -- markdown
@@ -25,17 +24,9 @@ end, { desc = "Preview document" })
 --- telekasten
 -- On hesitation, bring up the command panel
 -- Function mappings
-map("n", "<leader>zz", ":lua require('telekasten').find_notes()<CR>", { desc = "Find notes" })
-map("n", "<leader>zd", ":lua require('telekasten').find_daily_notes()<CR>", { desc = "Find daily notes" })
-map("n", "<leader>zg", ":lua require('telekasten').search_notes()<CR>", { desc = "Find daily notes" })
 map("n", "<leader>zf", ":lua require('telekasten').follow_link()<CR>", { desc = "Folow link" })
 map("n", "gf", ":lua require('telekasten').follow_link()<CR>", { desc = "Folow link" })
 
-map("n", "<leader>zT", ":lua require('telekasten').goto_today()<CR>", { desc = "Go to today" })
-map("n", "<leader>zW", ":lua require('telekasten').goto_thisweek()<CR>", { desc = "Go to this week" })
-map("n", "<leader>zw", ":lua require('telekasten').find_weekly_notes()<CR>", { desc = "Find weekly notes" })
-map("n", "<leader>zn", ":lua require('telekasten').new_note()<CR>", { desc = "New note" })
-map("n", "<leader>zN", ":lua require('telekasten').new_templated_note()<CR>", { desc = "New teplate note" })
 map("n", "<leader>zy", ":lua require('telekasten').yank_notelink()<CR>", { desc = "Yank link" })
 map("n", "<leader>zc", ":lua require('telekasten').show_calendar()<CR>", { desc = "Show calendar" })
 map("n", "<leader>zC", ":CalendarT<CR>", { desc = "Calendar" })

@@ -1,6 +1,4 @@
-local HEIGHT_RATIO = 0.8 -- You can change this
-local WIDTH_RATIO = 0.5 -- You can change this too
-
+local get_icon = require("core.utils").get_icon
 local options = {
   filters = {
     dotfiles = false,
@@ -18,7 +16,6 @@ local options = {
     adaptive_size = false,
     side = "left",
     width = 30,
-    hide_root_folder = true,
     preserve_window_proportions = true,
   },
   git = {
@@ -50,26 +47,26 @@ local options = {
       },
 
       glyphs = {
-        default = "",
-        symlink = "",
+        default = get_icon("DefaultFile"),
+        symlink = get_icon("SymLinkFile"),
         folder = {
-          default = "",
-          empty = "",
-          empty_open = "",
-          open = "",
-          symlink = "",
-          symlink_open = "",
-          arrow_open = "",
-          arrow_closed = "",
+          default = get_icon("FolderClosed"),
+          empty = get_icon("FolderClosed"),
+          empty_open = get_icon("FolderEmpty"),
+          open =get_icon("FolderOpen"),
+          symlink =get_icon("Symlink"),
+          symlink_open = get_icon("SymlinkOpen"),
+          arrow_open = get_icon("FoldOpened"),
+          arrow_closed = get_icon("FoldClosed"),
         },
         git = {
-          unstaged = "✗",
-          staged = "✓",
-          unmerged = "",
-          renamed = "➜",
-          untracked = "★",
-          deleted = "",
-          ignored = "◌",
+          unstaged = get_icon("GitUnstaged"),
+          staged = get_icon("GitStaged"),
+          unmerged =get_icon("GitUnmerged"),
+          renamed = get_icon("GitRenamed"),
+          untracked = get_icon("GitUntracked"),
+          deleted = get_icon("GitDelete"),
+          ignored = get_icon("GitIgnored"),
         },
       },
     },
