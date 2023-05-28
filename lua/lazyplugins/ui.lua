@@ -54,6 +54,9 @@ return {
 			"TransparentDisable",
 			"TransparentToggle",
 		},
+		config = function ()
+			require("plugins.configs.transparent")
+		end
 	},
 	{
 		"lukas-reineke/indent-blankline.nvim",
