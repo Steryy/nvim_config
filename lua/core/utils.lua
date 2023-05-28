@@ -1,12 +1,50 @@
 local M = {}
 local merge_tb = vim.tbl_deep_extend
+M.load_mappings = function(section, mapping_opt)
+	vim.schedule(function()
+		local function set_section_map(section_values)
+			if section_values.plugin then
+				return
+			end
+
+			section_values.plugin = nil
+
+			for mode, mode_values in pairs(section_values) do
+				local default_opts =
+					merge_tb("force", { mode = mode }, mapping_opt or {})
+				for keybind, mapping_info in pairs(mode_values) do
+					-- merge default + user opts
+					local opts =
+						merge_tb("force", default_opts, mapping_info.opts or {})
+
+					mapping_info.opts, opts.mode = nil, nil
+					opts.desc = mapping_info[2]
+
+					vim.keymap.set(mode, keybind, mapping_info[1], opts)
+				end
+			end
+		end
+
+		local mappings = {}
+		if type(section) == "string" and mappings[section] then
+			mappings[section]["plugin"] = nil
+			mappings = { mappings[section] }
+		end
+
+		for _, sect in pairs(mappings) do
+			set_section_map(sect)
+		end
+	end)
+end
 
 M.lazy_load = function(plugin)
 	vim.api.nvim_create_autocmd({ "BufRead", "BufWinEnter", "BufNewFile" }, {
 		group = vim.api.nvim_create_augroup("BeLazyOnFileOpen" .. plugin, {}),
 		callback = function()
 			local file = vim.fn.expand("%")
-			local condition = file ~= "NvimTree_1" and file ~= "[lazy]" and file ~= ""
+			local condition = file ~= "NvimTree_1"
+				and file ~= "[lazy]"
+				and file ~= ""
 
 			if condition then
 				vim.api.nvim_del_augroup_by_name("BeLazyOnFileOpen" .. plugin)
@@ -94,7 +132,10 @@ function M.toggle(option, silent, values)
 		else
 			vim.opt_local[option] = values[1]
 		end
-		return Util.info("Set " .. option .. " to " .. vim.opt_local[option]:get(), { title = "Option" })
+		return Util.info(
+			"Set " .. option .. " to " .. vim.opt_local[option]:get(),
+			{ title = "Option" }
+		)
 	end
 	vim.opt_local[option] = not vim.opt_local[option]:get()
 	if not silent then
@@ -122,20 +163,19 @@ end
 
 function M.telescope(builtin, opts)
 	local params = { builtin = builtin, opts = opts }
-
-	builtin = params.builtin
-	opts = params.opts
-	local tels = require("telescope.builtin")[builtin]
-	local function a()
-		local error, _ = pcall(tels, opts)
-
-		if not error and string.find(builtin,"git")~=-1 then
-			local cwd = vim.loop.cwd()
-
-			print(cwd .. " dont have git directory")
+	return function()
+		builtin = params.builtin
+		opts = params.opts
+		if builtin == "files" then
+			if vim.loop.fs_stat((opts.cwd or vim.loop.cwd()) .. "/.git") then
+				opts.show_untracked = true
+				builtin = "git_files"
+			else
+				builtin = "find_files"
+			end
 		end
+		require("telescope.builtin")[builtin](opts)
 	end
-    return a
 end
 
 return M

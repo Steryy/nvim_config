@@ -1,6 +1,5 @@
 local cmp = require("cmp")
 -- local cmp_action = require("lsp-zero").cmp_action()
-
 local conf = {
 	duplicates = {
 		buffer = 1,
@@ -60,7 +59,7 @@ M.toggle_completion = function()
 		print("completion not available")
 	end
 end
-local select_opts = {behavior = 'select'}
+local select_opts = { behavior = "select" }
 local config = {
 	completion = {
 		completeopt = "menu,menuone",
@@ -82,7 +81,7 @@ local config = {
 				end
 			end
 
-			vim_item.menu = conf.source_names[entry.source.name]
+			vim_item.menu = conf.source_names[entry.source.name] or entry.source.name
 			if entry.completion_item.documentation then
 				vim_item.menu = vim_item.menu .. "d"
 			end
@@ -104,31 +103,31 @@ local config = {
 
 		{ name = "nvim_lsp" },
 		{ name = "luasnip" },
-		{ name = "buffer", keyword_length =3 },
+		{ name = "buffer", keyword_length = 3 },
 		{ name = "nvim_lua" },
 		{ name = "async_path" },
 	},
 	mapping = {
-    ['<C-d>'] = cmp.mapping.scroll_docs(4),
-    ['<C-u>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-y>'] = cmp.mapping.confirm({select = true}),
-    ['<C-e>'] = cmp.mapping.abort(),
-    ['<Up>'] = cmp.mapping.select_prev_item(select_opts),
-    ['<Down>'] = cmp.mapping.select_next_item(select_opts),
-    ['<C-p>'] = cmp.mapping(function()
-      if cmp.visible() then
-        cmp.select_prev_item(select_opts)
-      else
-        cmp.complete()
-      end
-    end),
-    ['<C-n>'] = cmp.mapping(function()
-      if cmp.visible() then
-        cmp.select_next_item(select_opts)
-      else
-        cmp.complete()
-      end
-    end),
+		["<C-d>"] = cmp.mapping.scroll_docs(4),
+		["<C-u>"] = cmp.mapping.scroll_docs(-4),
+		["<C-y>"] = cmp.mapping.confirm({ select = true }),
+		["<C-e>"] = cmp.mapping.abort(),
+		["<Up>"] = cmp.mapping.select_prev_item(select_opts),
+		["<Down>"] = cmp.mapping.select_next_item(select_opts),
+		["<C-p>"] = cmp.mapping(function()
+			if cmp.visible() then
+				cmp.select_prev_item(select_opts)
+			else
+				cmp.complete()
+			end
+		end),
+		["<C-n>"] = cmp.mapping(function()
+			if cmp.visible() then
+				cmp.select_next_item(select_opts)
+			else
+				cmp.complete()
+			end
+		end),
 		-- ["<C-f>"] = cmp_action.luasnip_jump_forward(),
 		-- ["<C-b>"] = cmp_action.luasnip_jump_backward(),
 
@@ -155,13 +154,18 @@ local config = {
 	},
 }
 
-local ok_luasnip, luasnip = pcall(require, 'luasnip')
+local ok_luasnip, luasnip = pcall(require, "luasnip")
 
-  if ok_luasnip then
-    config.snippet = {
-      expand = function(args)
-        luasnip.lsp_expand(args.body)
-      end,
-    }
-  end
-cmp.setup(config)
+if ok_luasnip then
+	config.snippet = {
+		expand = function(args)
+			luasnip.lsp_expand(args.body)
+		end,
+	}
+end
+cmp.setup.filetype({ "mysql", "sql", "plsql" }, {
+	sources = cmp.config.sources({
+		{ name = "vim-dadbod-completion" },
+	}),
+})
+return config

@@ -1,9 +1,10 @@
-return{
-{
+return {
+	{
+
 		"hrsh7th/nvim-cmp",
 		event = {
 			"InsertEnter",
-			-- "CmdLineEnter",
+			"CmdLineEnter",
 		},
 		dependencies = {
 			{
@@ -12,7 +13,7 @@ return{
 				dependencies = "rafamadriz/friendly-snippets",
 				opts = { history = true, updateevents = "TextChanged,TextChangedI" },
 				config = function(_, opts)
-					require("plugins.configs.luasnip")(opts)
+					require("plugins.configs.others").luasnip(opts)
 				end,
 			},
 
@@ -27,9 +28,11 @@ return{
 			"FelipeLema/cmp-async-path",
 		},
 
-		config = function(_, opts)
-			require("plugins.configs.cmp")
+		opts = function()
+			return require("plugins.configs.cmp")
 		end,
-	}
-
+		config = function(_, opts)
+			require("cmp").setup(opts)
+		end,
+	},
 }
