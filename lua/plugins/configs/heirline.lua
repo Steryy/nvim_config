@@ -474,6 +474,9 @@ function Mode.get_mode()
 		return mode_code
 	end
 	local mode = Mode.map[mode_code]
+	if mode_code=="t" and vim.bo.filetype=="fzf" then
+		return " ".."FZF".." "
+	end
 	return " " .. mode .. " "
 end
 
@@ -735,6 +738,7 @@ local prompt = {
 	condition = function()
 		return conditions.buffer_matches({
 			buftype = { "nofile", "prompt", "help", "quickfix" },
+			filetype={"fzf"},
 		})
 	end,
 

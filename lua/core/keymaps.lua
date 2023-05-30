@@ -258,6 +258,43 @@ keymaps.telescope = {
 		desc = "Telescope commits",
 	},
 }
+keymaps.fzf={
+
+	{
+		"<leader>fs",
+		function()
+			vim.ui.input({ prompt = "Grep > " }, function(sr)
+				require("fzf-lua").grep({search=sr})
+			end)
+		end,
+		desc = "Telescope grep_string",
+	},
+
+	{
+		"<leader>ff",
+		function()
+
+				require("fzf-lua").files()
+		end,
+		desc = "Telescope find files",
+	},
+	{
+		"<leader>fw",
+		function()
+			require("fzf-lua").live_grep()
+		end,
+		desc = "Telescope live grep",
+	},
+	{
+		"<leader>gc",
+		function()
+			require("fzf-lua").git_commits()
+		end,
+		desc = "Telescope commits",
+	},
+
+
+}
 keymaps.tmux = {
 
 	{

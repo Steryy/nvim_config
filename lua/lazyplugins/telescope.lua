@@ -4,7 +4,7 @@ return {
 	{
 		"nvim-telescope/telescope.nvim",
 		cmd = "Telescope",
-		keys = keymaps.telescope,
+		-- keys = keymaps.telescope,
 		dependencies = {
 			{ 'nvim-telescope/telescope-fzf-native.nvim',
 				build =
@@ -15,6 +15,7 @@ return {
 			{
 				"nvim-telescope/telescope-hop.nvim",
 			},
+			{'nvim-telescope/telescope-media-files.nvim'},
 		},
 		opts = function()
 			return require("plugins.configs.telescope")
@@ -26,7 +27,6 @@ return {
 			-- load extensions
 			if opts.extensions_list then
 				for _, ext in ipairs(opts.extensions_list) do
-					print(ext)
 					telescope.load_extension(ext)
 				end
 			end
