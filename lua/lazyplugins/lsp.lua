@@ -12,6 +12,7 @@ return {
 				build = function()
 					pcall(vim.cmd, "MasonUpdate")
 				end,
+				opts={},
 				cmd={"Mason"},
 			},
 
