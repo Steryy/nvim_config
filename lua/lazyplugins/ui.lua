@@ -8,7 +8,7 @@ return {
 	},
 	{
 		"rebelot/heirline.nvim",
-		lazy = false,
+		event="BufEnter",
 		enabled = statusline == "heirline",
 		config = function()
 			require("plugins.configs.heirline")
@@ -20,6 +20,27 @@ return {
 		lazy = false,
 		opts = {},
 	},
+	{ "EdenEast/nightfox.nvim", lazy = false },
+	{
+		"maxmx03/fluoromachine.nvim",
+		lazy = false,
+		config = function()
+			local fm = require("fluoromachine")
+
+			fm.setup({
+				glow = false,
+				theme = "fluoromachine",
+			})
+		end,
+	},
+	{
+		"nyngwang/nvimgelion",
+		lazy = false,
+		config = function()
+			-- do whatever you want for further customization~
+		end,
+	},
+
 	{
 		"numToStr/Sakura.nvim",
 		lazy = false,
